@@ -7,16 +7,30 @@
 *******                                                 *******
 **************************************************************/
 
+#define MAXLINE 25
+#define SA struct sockaddr
+#define SERV_PORT 9877
+#define LISTENQ 5
+
 #include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<string.h>
+#include<netinet/in.h>
 #include<sys/socket.h>
+#include"jc_wr.h"
+#include"jc_err.h"
 
 void str_echo(int sockfd)
 {
     ssize_t n;
     char buf[MAXLINE];
 again:
-    while((n=read(sockfd,buf,MAXLINE))>0)
-        writen(sockfd,buf,n);
+    while((n=read(sockfd,buf,MAXLINE))>0){
+        buf[n]='\0';
+        printf("[recieved %d chars] %s",n,buf);
+        writen(sockfd,buf,n+1);
+    }
     if(n<0&&errno==EINTR)
         goto again;
     else if(n<0)
